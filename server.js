@@ -25,6 +25,8 @@ app.use(bodyParser.urlencoded({
 })
 );
 
+var PORT = process.env.PORT || 3000;
+
 // If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/article_db";
 
@@ -145,6 +147,6 @@ app.put("/articles/:id", function (req, res) {
       });
 })
 
-app.listen(3000, function() {
+app.listen(PORT, function() {
     console.log("App running on port 3000!");
   });
