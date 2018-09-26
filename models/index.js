@@ -1,4 +1,4 @@
 module.exports = {
     Article: require("./articleModel.js"),
-    Note: require("./commentModel.js")
+    Note: require("./noteModel.js")
   };
