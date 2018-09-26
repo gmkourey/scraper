@@ -99,7 +99,7 @@ app.get("/saved", function(req,res) {
 app.get("/articles/:id", function(req, res) {
 
     db.Article.findOne({"_id": req.params.id})
-    .populate("comment")
+    .populate("note")
     .then(function(dbArticle) {
         res.json(dbArticle)
     })
@@ -110,10 +110,10 @@ app.get("/articles/:id", function(req, res) {
 
 app.post("/articles/:id", function(req, res) {
     console.log(req.body);
-    db.Comment.create(req.body)
-    .then(function(dbComment) {
-        console.log(dbComment._id);
-        return db.Article.findOneAndUpdate({ _id: req.params.id}, {$set: {comment: dbComment._id }}, { new: true });
+    db.Note.create(req.body)
+    .then(function(dbNote) {
+        console.log(dbNote._id);
+        return db.Article.findOneAndUpdate({ _id: req.params.id}, {$set: {note: dbNote._id }}, { new: true });
 
     })
 
