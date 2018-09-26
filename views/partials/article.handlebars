@@ -1,1 +1,12 @@
-<h3>{{articles.title}}</h3>
+<div class="article">
+<h3>{{this.title}}</h3>
+<img class="image" src="{{this.imageLink}}"/>
+<p class="description">{{this.desc}}</p>
+<a class="btn btn-outline-primary linkArticle" target="_blank" href="{{this.link}}">Link To Article</a>
+
+{{#if this.saved}}
+<button data-id="{{this._id}}" class="btn btn-outline-danger saveButton">Unsave Article</button>
+{{else}}
+<button data-id="{{this._id}}" class="btn btn-outline-secondary saveButton">Save Article</button>
+{{/if}}
+</div>

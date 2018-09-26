@@ -17,7 +17,7 @@ var exphbs = require("express-handlebars");
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
-require("./routes/html-routes.js")(app);
+// require("./routes/html-routes.js")(app);
 
 //Use body parser as middleware
 app.use(bodyParser.urlencoded({
@@ -25,14 +25,21 @@ app.use(bodyParser.urlencoded({
 })
 );
 
-//Connecting with mongoose
-mongoose.connect("mongodb://localhost/article_db", { useNewUrlParser: true });
+// If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/article_db";
+
+// Set mongoose to leverage built in JavaScript ES6 Promises
+// Connect to the Mongo DB
+mongoose.Promise = Promise;
+mongoose.connect(MONGODB_URI);
+
 
 //Initialize use of static files on front end
 app.use(express.static("public"));
 
 //Path to scrape articles
 app.get("/scrape", function(req, res) {
+
     request("https://www.nytimes.com/section/technology", function (error, response, html) {
 
         mongoose.connection.db.dropCollection('articles');
@@ -67,10 +74,11 @@ app.get("/scrape", function(req, res) {
 });
 
 //Path to view all articles
-app.get("/view", function(req, res) {
+app.get("/", function(req, res) {
+
     db.Article.find({})
     .then(function(dbArticles) {
-        res.json(dbArticles);
+        res.render("index", {articles: dbArticles});
     })
     .catch(function(error) {
         res.json(error);
@@ -78,7 +86,64 @@ app.get("/view", function(req, res) {
 
 });
 
+app.get("/saved", function(req,res) {
+    db.Article.find({"saved": true})
+    .then(function(dbArticles) {
+        res.render("saved", {articles: dbArticles});
+    })
+        .catch(function(error) {
+            res.json(error);
+    })
+})
 
+app.get("/articles/:id", function(req, res) {
+
+    db.Article.findOne({"_id": req.params.id})
+    .populate("comment")
+    .then(function(dbArticle) {
+        res.json(dbArticle)
+    })
+    .catch(function(error) {
+        res.json(error);
+    })
+})
+
+app.post("/articles/:id", function(req, res) {
+    console.log(req.body);
+    db.Comment.create(req.body)
+    .then(function(dbComment) {
+        console.log(dbComment._id);
+        return db.Article.findOneAndUpdate({ _id: req.params.id}, {$set: {comment: dbComment._id }}, { new: true });
+
+    })
+
+    .then(function(dbArticle) {
+        console.log(dbArticle);
+    res.json(dbArticle);
+    })
+    .catch(function(error) {
+        console.log(error);
+        res.json(error);
+    })
+});
+
+app.put("/articles/:id", function (req, res) {
+
+    var id = mongoose.Types.ObjectId(req.params.id);
+
+    db.Article.findById(id, function (err, article) {
+        if (err) return handleError(err);
+        if(article.saved === false) {
+        article.saved = true;
+    } else {
+        article.saved = false;
+    }
+        article.save(function (err, updatedArticle) {
+          if (err) return handleError(err);
+          res.send(updatedArticle);
+        });
+      });
+})
 
 app.listen(3000, function() {
     console.log("App running on port 3000!");

@@ -1,9 +1,9 @@
 <div class="container">
-
-<div class="articleContainer">
+          <a class="btn btn-primary savedArticles" href="/saved">View Saved Articles</a>
+{{!-- <div class="articleContainer"> --}}
+    {{#each articles}}
+      {{> article}}
+  {{/each}}
+{{!-- </div> --}}
 
 </div>
-
-</div>
-
-<script src="js/app.js"></script>

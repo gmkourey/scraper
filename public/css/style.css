@@ -4,3 +4,28 @@
     padding: 20px;
     border-radius: 5px;
 }
+
+.saveButton {
+    margin-left: 20px;
+}
+.image {
+    width:210px;
+    height: 140px;
+}
+.description {
+    padding: 20px 20px;
+    width: 100%;
+}
+.linkArticle {
+    clear:both;
+}
+.savedArticles {
+    color:white !important;
+}
+.commentButton {
+    margin-left: 20px;
+}
+.commentForm {
+    display:none;
+    margin-top: 25px;
+}

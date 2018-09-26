@@ -1,28 +1,50 @@
-var articles;
+$(document).on("click", ".saveButton", function(event) {
 
-$.ajax({url: "/view", success: function(result) {
+    var id = $(this).attr("data-id");
 
-    for(var i = 0; i < result.length; i++) {
-        var newDiv = $("<div class='article'>")
-        
-        var newHeadline = $("<h2 class='headline'>" + result[i].title + "</h2>");
+    $.ajax("/articles/" + id, {
+        type: "PUT",
+        data: "true"
+    }).then(function(response) {
 
-        $(newDiv).append(newHeadline);
+    })
 
-        var newImage = $("<img class='image' src='" + result[i].imageLink + "' />");
+    location.reload();
 
-        $(newDiv).append(newImage);
+});
 
-        var newDesc = $("<h4 class='description'>" + result[i].desc + "</h4>")
+$(document).on("click", ".commentButton", function(event) {
 
-        $(newDiv).append(newDesc);
+        $(".commentForm").css("display", "block");
 
-        var newLink = $("<a class='btn btn-primary' target='_blank' href='" + result[i].link + "'>Link to Article</a>")
+});
 
-        $(newDiv).append(newLink);
+$(document).on("click", "#submitComment", function(event) {
 
-        $(".articleContainer").append(newDiv);
-    }
+    event.preventDefault();
 
-}
+    var id = $(".submit").attr("data-id");
+
+    $.ajax({
+        method: "POST",
+        url: "/articles/" + id,
+        data: {
+          // Value taken from title input
+          title: $("#noteTitle").val(),
+          // Value taken from note textarea
+          note: $("#noteBody").val()
+        }
+      })
+        // With that done
+        .then(function(data) {
+          // Log the response
+          console.log(data);
+          // Empty the notes section
+        //   $("#notes").empty();
+        });
+    
+      // Also, remove the values entered in the input and textarea for note entry
+      $("#noteTitle").val("");
+      $("#noteBody").val("");
+
 })
